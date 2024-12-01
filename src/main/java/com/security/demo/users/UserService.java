@@ -1,11 +1,9 @@
 package com.security.demo.users;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.security.demo.security.JwtUtil;
-
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,33 +12,33 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    // Register User
-    public User registerUser(String username, String password, String role) {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));  // Hashing password
-        user.setRole(role);
+    // Create or Update User
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
 
-    // Login User (verifikasi username dan password, kemudian generate token JWT)
-    public String loginUser(String username, String password) {
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
-            // Generate JWT token jika login berhasil
-            return jwtUtil.generateToken(username);
-        }
-        return null;  // Invalid credentials
+    // Find All Users
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+    // Find User by ID
+    public Optional<User> findUserById(Long id) {
+        return userRepository.findById(id);
     }
 
     // Find User by Username
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    // Delete User by ID
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    // Delete User by Entity
+    public void deleteUser(User user) {
+        userRepository.delete(user);
     }
 }

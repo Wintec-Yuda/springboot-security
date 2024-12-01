@@ -16,14 +16,15 @@ public class JwtUtil {
     Dotenv dotenv = Dotenv.load();
 
     private byte[] secretKey = dotenv.get("JWT_SECRET_KEY").getBytes();
-    
+
     // In-memory storage for blacklisted tokens
     private static final Set<String> blacklistedTokens = new HashSet<>();
 
     // Generate JWT Token
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // Token expires in 1 hour
                 .signWith(Keys.hmacShaKeyFor(secretKey), SignatureAlgorithm.HS256)
@@ -41,12 +42,23 @@ public class JwtUtil {
 
     // Extract username from JWT Token
     public String getUsernameFromToken(String token) {
+        token = token.replace("Bearer ", "");
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    // Extract role from JWT Token
+    public String getRoleFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class); // Ambil nilai role sebagai String
     }
 
     // Check if the token is expired

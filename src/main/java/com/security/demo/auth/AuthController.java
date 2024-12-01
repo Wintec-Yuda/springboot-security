@@ -13,6 +13,9 @@ import com.security.demo.users.UserService;
 public class AuthController {
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private UserService userService;
 
     // Endpoint untuk Register
@@ -22,7 +25,7 @@ public class AuthController {
             return new ResponseEntity<>(new AuthResponse("Username is already taken!", null), HttpStatus.BAD_REQUEST);
         }
 
-        userService.registerUser(registerRequest.getUsername(), registerRequest.getPassword(),
+        authService.registerUser(registerRequest.getUsername(), registerRequest.getPassword(),
                 registerRequest.getRole());
         return new ResponseEntity<>(new AuthResponse("User registered successfully!", null), HttpStatus.CREATED);
     }
@@ -30,7 +33,7 @@ public class AuthController {
     // Endpoint untuk Login
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
-        String token = userService.loginUser(loginRequest.getUsername(), loginRequest.getPassword());
+        String token = authService.loginUser(loginRequest.getUsername(), loginRequest.getPassword());
         if (token != null) {
             return ResponseEntity.ok(new AuthResponse("Login successful!", token));
         } else {

@@ -25,6 +25,4 @@ public class User {
     @Column(nullable = false)
     private String role;  // Role bisa "admin" atau "user"
 
-    // Getters and Setters
-
 }
