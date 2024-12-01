@@ -53,6 +53,7 @@ public class JwtUtil {
 
     // Extract role from JWT Token
     public String getRoleFromToken(String token) {
+        token = token.replace("Bearer ", "");
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
@@ -68,6 +69,7 @@ public class JwtUtil {
 
     // Extract expiration date from JWT Token
     private Date getExpirationDateFromToken(String token) {
+        token = token.replace("Bearer ", "");
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
