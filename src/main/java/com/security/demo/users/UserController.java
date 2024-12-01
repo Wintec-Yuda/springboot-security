@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,42 +24,45 @@ public class UserController {
   @Autowired
   private UserService userService;
 
-   // Create or Update User
+  // Create or Update User
   @PreAuthorize("hasAuthority('admin')")
   @PostMapping
-   public ResponseEntity<User> saveUser(@RequestBody User user) {
-       User savedUser = userService.saveUser(user);
-       return ResponseEntity.ok(savedUser);
-   }
+  public ResponseEntity<User> saveUser(@RequestBody User user) {
+    User savedUser = userService.saveUser(user);
+    return ResponseEntity.ok(savedUser);
+  }
 
-   // Get All Users
+  // Get All Users
   @PreAuthorize("isAuthenticated()")
-  @GetMapping
-   public ResponseEntity<List<User>> getAllUsers() {
-       List<User> users = userService.findAllUsers();
-       return ResponseEntity.ok(users);
-   }
+  @GetMapping()
+  public ResponseEntity<Page<User>> getUsers(
+      @RequestParam(required = false) String username,
+      @RequestParam(required = false) String role,
+      @RequestParam(required = false) String sorted,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    return ResponseEntity.ok(userService.getUsers(username, role, page, size, sorted));
+  }
 
-   // Get User by ID
+  // Get User by ID
   @PreAuthorize("hasAuthority('admin')")
-   @GetMapping("/{id}")
-   public ResponseEntity<User> getUserById(@PathVariable Long id) {
-       Optional<User> user = userService.findUserById(id);
-       return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-   }
+  @GetMapping("/{id}")
+  public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    Optional<User> user = userService.findUserById(id);
+    return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+  }
 
-   // Delete User by ID
+  // Delete User by ID
   @PreAuthorize("hasAuthority('admin')")
-   @DeleteMapping("/{id}")
-   public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
-       Optional<User> user = userService.findUserById(id);
-       if (user.isPresent()) {
-           userService.deleteUserById(id);
-           return ResponseEntity.noContent().build();
-       }
-       return ResponseEntity.notFound().build();
-   }
-
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
+    Optional<User> user = userService.findUserById(id);
+    if (user.isPresent()) {
+      userService.deleteUserById(id);
+      return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.notFound().build();
+  }
 
   @GetMapping("/check-role")
   public ResponseEntity<List<String>> checkRole() {
