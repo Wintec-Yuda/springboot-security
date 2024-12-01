@@ -14,16 +14,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableMethodSecurity // Untuk mengaktifkan anotasi @PreAuthorize jika diperlukan
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;
-
-    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
-        this.jwtRequestFilter = jwtRequestFilter;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
