@@ -1,5 +1,6 @@
 package com.security.demo.security;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -12,7 +13,9 @@ import java.util.Set;
 @Component
 public class JwtUtil {
 
-    private byte[] secretKey = "your-very-secure-secret-key-goes-here".getBytes();
+    Dotenv dotenv = Dotenv.load();
+
+    private byte[] secretKey = dotenv.get("JWT_SECRET_KEY").getBytes();
     
     // In-memory storage for blacklisted tokens
     private static final Set<String> blacklistedTokens = new HashSet<>();
